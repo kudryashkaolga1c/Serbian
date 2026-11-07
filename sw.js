@@ -1,5 +1,5 @@
 // Сербский тренажёр: работа без интернета
-const CACHE='srb-v5';
+const CACHE='srb-v7';
 const FILES=['./','./index.html','./pics.json','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 const SOUNDS=["./sound-g0.json", "./sound-g1.json", "./sound-g2.json", "./sound-g3.json", "./sound-g4.json", "./sound-g5.json", "./sound-g6.json", "./sound-g7.json"];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES).then(()=>Promise.all(SOUNDS.map(u=>c.add(u).catch(()=>{}))))).then(()=>self.skipWaiting()))});
