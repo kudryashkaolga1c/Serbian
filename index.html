@@ -383,7 +383,7 @@ function home(){
       <button class="ghost" data-act="import">Загрузить прогресс</button></div>
       ${moveMsg?`<p class="mvmsg">${esc(moveMsg)}</p>`:''}</div>`:''}
     ${confirmReset?`<div class="confirm"><span>Стереть весь прогресс и список ошибок?</span><div class="row"><button class="ghost" data-act="reset-no">Отмена</button><button class="danger" data-act="reset-yes">Стереть</button></div></div>`:`<button class="link danger-link" data-act="reset">Сбросить прогресс</button>`}
-    <p class="note">Прогресс хранится в этом браузере на этом телефоне.</p></div></details>
+    <p class="note">Прогресс хранится в этом браузере на этом телефоне. Версия от 08.11.2026.</p></div></details>
   <div class="cta">${S.app==='study'?(()=>{const m=S.size==='all'?pool().length:Math.min(S.size,pool().length);return `<button class="primary" data-act="study" ${m?'':'disabled'}>${m?'Смотреть · '+words(m):'Выбери тему'}</button>`})():`<button class="primary" data-act="start" ${n?'':'disabled'}>${n?'Начать · '+n+' '+plural(n,'вопрос','вопроса','вопросов'):(pool().length?'Всё выучено':'Выбери тему')}</button>`}</div>
   </div>`;
   app.innerHTML=h;
