@@ -593,7 +593,7 @@ function pick(k){
   const tm=document.getElementById('tm');if(tm){tm.classList.remove('run');tm.style.visibility='hidden'}
   const vd=document.getElementById('vd');
   if(res==='fast'){vd.className='verdict fast';vd.textContent='Верно · '+sec(t)}
-  else if(res==='slow'){vd.className='verdict slow';vd.textContent='Верно, но '+sec(t)+(r.e?' · повторим ещё':' · уже 7 раз, хватит')}
+  else if(res==='slow'){vd.className='verdict slow';vd.textContent='Верно, но медленно ('+sec(t).replace(' с','')+' из '+String(thrOf(c.w)).replace('.',',')+' с)'+(r.e?' · повторим':' · уже 7 раз, хватит')}
   else{vd.className='verdict wrong';vd.textContent='Неверно · слово ушло в ошибки'}
   const sayAns=S.voice&&run.dir==='ru'&&canSay(c.w);
   if(run.dir==='ru'&&canSay(c.w))document.getElementById('nx').insertAdjacentHTML('beforebegin','<button class="ghost sayans" data-act="say">'+SPK+'<span>Послушать: '+esc(c.w.sr)+'</span></button>');
