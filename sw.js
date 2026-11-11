@@ -1,5 +1,5 @@
 // Сербский тренажёр: работа без интернета
-const CACHE='srb-v22';
+const CACHE='srb-v23';
 const FILES=['./','./index.html','./pics.json','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 const SOUNDS=["./sound-g0.json", "./sound-g1.json", "./sound-g2.json", "./sound-g3.json", "./sound-g4.json", "./sound-g5.json", "./sound-g6.json", "./sound-g7.json", "./sound-g8.json", "./sound-g9.json"];
 // при установке берём свежие файлы с сервера, а не из кэша браузера
