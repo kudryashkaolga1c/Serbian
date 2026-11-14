@@ -376,27 +376,28 @@ function speak(text,onend){
 const SND={has:new Set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),cache:{},loading:{},cur:null};
 function loadG(gi){if(!SND.has.has(gi))return Promise.resolve({});if(SND.cache[gi])return Promise.resolve(SND.cache[gi]);
   return SND.loading[gi]||(SND.loading[gi]=fetch('sound-g'+gi+'.json').then(r=>r.ok?r.json():{}).catch(()=>({})).then(j=>{SND.cache[gi]=j;if(!j.s||!Object.keys(j.s).length)SND.has.delete(gi);return j}))}
-function preload(list){[...new Set(list.map(w=>w.gi))].forEach(loadG)}
+function preload(list){[...new Set(list.map(w=>w.gi))].forEach(loadG);[...new Set(list.filter(w=>w.fm).map(w=>w.gi+'-'+w.ti))].forEach(k=>{const w=list.find(x=>x.gi+'-'+x.ti===k);loadF(w)})}
 const FC={};function loadF(w){const k=w.gi+'-t'+w.ti;return FC[k]||(FC[k]=fetch('sound-g'+k+'.json').then(r=>r.ok?r.json():{}).catch(()=>({})))}
 const canSay=w=>SND.has.has(w.gi)||!!TTS.voice;
 const anySound=()=>SND.has.size>0||!!TTS.voice;
 function sayWord(w,onend,chain){
   let done=false;const fin=()=>{if(done)return;done=true;onend&&onend()};
-  hush();
-  const ttsOr=()=>{if(TTS.voice)speak(w.sr,fin);else fin()};
+  hush();const gen=SAYGEN;
+  const ttsOr=()=>{if(gen!==SAYGEN)return;if(TTS.voice)speak(w.sr,fin);else fin()};
   if(!SND.has.has(w.gi)){ttsOr();return}
   const guard=setTimeout(fin,9000);timers.push(guard);
-  Promise.all([loadG(w.gi),chain?loadF(w):{}]).then(([j,jf])=>{if(done)return;const b=(chain&&(jf.f||{})[w.sr])||(j.s||{})[w.sr];if(!b){ttsOr();return}
+  Promise.all([loadG(w.gi),chain?loadF(w):{}]).then(([j,jf])=>{if(done||gen!==SAYGEN)return;const b=(chain&&(jf.f||{})[w.sr])||(j.s||{})[w.sr];if(!b){ttsOr();return}
     try{const a=new Audio('data:audio/ogg;codecs=opus;base64,'+b);SND.cur=a;a.preservesPitch=true;a.playbackRate=S.rate||1;
       a.onended=fin;a.onerror=ttsOr;const p=a.play();if(p&&p.catch)p.catch(ttsOr)}catch(e){ttsOr()}})}
 function sayRu(w,onend){
   let done=false;const fin=()=>{if(done)return;done=true;onend&&onend()};
   if(!SND.has.has(w.gi)){fin();return}
-  timers.push(setTimeout(fin,9000));
-  loadG(w.gi).then(j=>{if(done)return;const b=(j.r||{})[w.ru];if(!b){fin();return}
+  const gen=SAYGEN;timers.push(setTimeout(fin,9000));
+  loadG(w.gi).then(j=>{if(done||gen!==SAYGEN)return;const b=(j.r||{})[w.ru];if(!b){fin();return}
     try{const a=new Audio('data:audio/ogg;codecs=opus;base64,'+b);SND.cur=a;a.preservesPitch=true;a.playbackRate=S.rate||1;
       a.onended=fin;a.onerror=fin;const p=a.play();if(p&&p.catch)p.catch(fin)}catch(e){fin()}})}
-function hush(){try{TTS.ok&&speechSynthesis.cancel()}catch(e){}try{if(SND.cur){SND.cur.pause();SND.cur=null}}catch(e){}}
+let SAYGEN=0;
+function hush(){SAYGEN++;try{TTS.ok&&speechSynthesis.cancel()}catch(e){}try{if(SND.cur){SND.cur.pause();SND.cur=null}}catch(e){}}
 const SPK='<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 const MUTE='<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 /* ---------- перенос прогресса ---------- */
