@@ -487,7 +487,8 @@ function home(){
   <div class="list">
     <label class="li"><span class="lt">Озвучка</span><input type="checkbox" id="voice" ${S.voice?'checked':''}><span class="tg"></span></label>
     ${S.voice?`<div class="li"><span class="lt">Скорость</span><div class="mini">${[[1,'1×'],[0.9,'0,9×'],[0.7,'0,7×']].map(([v,l])=>`<button data-rate="${v}" aria-pressed="${S.rate===v}">${l}</button>`).join('')}</div></div>`:''}
-    ${S.app==='study'?`<div class="li"><span class="lt">Пауза</span><div class="mini">${[1,2,3,5].map(v=>`<button data-sp="${v}" aria-pressed="${S.sp===v}">${v} с</button>`).join('')}</div></div>
+    ${S.app==='study'?`<div class="li"><span class="lt">Сербский звучит</span><div class="mini">${[1,2].map(v=>`<button data-rep="${v}" aria-pressed="${(S.rep||2)===v}">${v===1?'1 раз':'2 раза'}</button>`).join('')}</div></div>
+    <div class="li"><span class="lt">Пауза</span><div class="mini">${[1,2,3,5].map(v=>`<button data-sp="${v}" aria-pressed="${S.sp===v}">${v} с</button>`).join('')}</div></div>
     <div class="li"><span class="lt">Порядок</span><div class="mini"><button data-ord="list" aria-pressed="${S.ord!=='mix'}">По списку</button><button data-ord="mix" aria-pressed="${S.ord==='mix'}">Вперемешку</button></div></div>`:''}
     <label class="li"${S.app==='study'?'':' hidden'}><span class="lt">Дублировать кириллицей</span><input type="checkbox" id="cyr" ${S.cyr!==false?'checked':''}><span class="tg"></span></label>
     <label class="li"${S.app==='study'&&S.cyr!==false?'':' hidden'}><span class="lt">Формы глаголов тоже кириллицей</span><input type="checkbox" id="cyrf" ${S.cyrf?'checked':''}><span class="tg"></span></label>
@@ -522,6 +523,7 @@ app.addEventListener('click',e=>{
   else if(b.dataset.tk){S.t[b.dataset.tk]=+b.dataset.tv;save();home()}
   else if(b.dataset.app){S.app=b.dataset.app;save();home()}
   else if(b.dataset.sp){S.sp=+b.dataset.sp;save();home()}
+  else if(b.dataset.rep){S.rep=+b.dataset.rep;save();home()}
   else if(b.dataset.ord){S.ord=b.dataset.ord;save();home()}
   else if(b.dataset.rate){S.rate=+b.dataset.rate;save();home()}
   else if(b.dataset.len){S.len=b.dataset.len;save();home()}
@@ -752,7 +754,7 @@ async function runCard(w){
     const ch=w.fm?await loadF(w).then(j=>!!(j.f||{})[w.sr]):false;if(!ok())return;
     await new Promise(r=>sayWord(w,r,ch));if(!ok())return;
     // у прилагательных три формы и у глаголов «паровозик» звучат один раз
-    if(w.g!=='Прилагательные'&&!ch){await wait(700);if(!ok())return;
+    if(w.g!=='Прилагательные'&&!ch&&(S.rep||2)>1){await wait(700);if(!ok())return;
     await new Promise(r=>sayWord(w,r));if(!ok())return;}
     await wait(600);if(!ok())return;
     reveal();await new Promise(r=>sayRu(w,r));if(!ok())return;
