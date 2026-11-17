@@ -590,7 +590,14 @@ function start(mode,given){
 function options(w){
   const ans=x=>run.dir==='sr'?x.ru:x.sr;
   const right=ans(w), norm=s=>s.toLowerCase().replace(/[.!?,…]/g,'').trim();
-  const r=rec(run.dir,w.key), prev=(r.d||[]).filter(p=>norm(p)!==norm(right));
+  // синонимы не годятся в неверные варианты: если у кандидата совпадает хотя бы одно значение
+  // с вопросом или с правильным ответом, его не показываем (stvarno / zaista = «действительно»)
+  const parts=s=>String(s).toLowerCase().replace(/ё/g,'е').split(/[,;/(]|\s—\s/).map(t=>t.replace(/[.!?…)]/g,'').trim()).filter(Boolean);
+  const qs=x=>run.dir==='sr'?x.sr:x.ru;
+  const PQ=new Set(parts(qs(w))),PA=new Set(parts(right));
+  const clash=x=>parts(qs(x)).some(p=>PQ.has(p))||parts(ans(x)).some(p=>PA.has(p));
+  const bad=new Set(W.filter(x=>x.key!==w.key&&clash(x)).map(x=>norm(ans(x))));
+  const r=rec(run.dir,w.key), prev=(r.d||[]).filter(p=>norm(p)!==norm(right)&&!bad.has(norm(p))&&!parts(p).some(t=>PA.has(t)));
   const used=new Set([norm(right)]);const out=[];
   // на повторе: часть прошлых вариантов остаётся (случайно 0–3), остальные заменяются новыми
   if(prev.length){
@@ -598,7 +605,7 @@ function options(w){
     for(const p of shuffle(prev.slice()).slice(0,Math.max(0,3-change))){used.add(norm(p));out.push(p)}
     prev.forEach(p=>used.add(norm(p)));
   }
-  const tryFrom=list=>{for(const x of shuffle(list.slice())){if(out.length>=3)return;const a=ans(x);if(used.has(norm(a)))continue;used.add(norm(a));out.push(a)}};
+  const tryFrom=list=>{for(const x of shuffle(list.slice())){if(out.length>=3)return;const a=ans(x);if(used.has(norm(a))||clash(x)||bad.has(norm(a)))continue;used.add(norm(a));out.push(a)}};
   tryFrom(DATA[w.gi].t[w.ti].w.map(([sr,ru])=>({sr,ru})));
   if(out.length<3)tryFrom(W.filter(x=>x.gi===w.gi&&x.b===w.b));
   if(out.length<3)tryFrom(W.filter(x=>x.gi===w.gi));
